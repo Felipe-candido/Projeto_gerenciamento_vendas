@@ -44,7 +44,8 @@ def upload_arquivo():
   if 'file' not in request.files:
         return jsonify({"message": "Nenhum arquivo enviado!"}), 400
   
-
   arquivo = request.files['file']
+  if arquivo.filename == '':
+        return jsonify({"message": "Arquivo não selecionado!"}), 400
   file_path = os.path.join(UPLOAD_FOLDER, arquivo.filename)
   arquivo.save(file_path)
