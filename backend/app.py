@@ -6,6 +6,7 @@ import pandas as pd
 import psycopg2
 
 
+
 # PASTA PARA SALVAR OS ARQUIVOS CSV
 UPLOAD_FOLDER = '/backend'
 
@@ -54,9 +55,11 @@ def home():
 # ROTA PARA FAZER UPLOAD DO ARQUIVO
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_arquivo():
+  
   # VALIDACOES
   if 'file' not in request.files:
     return jsonify({"message": "Nenhum arquivo enviado!"}), 400
+  
   
   arquivo = request.files['file']
   if arquivo.filename == '':
@@ -64,8 +67,9 @@ def upload_arquivo():
   
   # LER O CSV COM PANDAS
   try:
-    pd_file = pd.read_csv(arquivo, delimiter=';')
+    pd_file = pd.read_csv(arquivo, delimiter=',', on_bad_lines='skip')
   except Exception as e:
+    print(f"Erro: {e}")
     return jsonify({"mensagem": f"Erro ao ler o arquivo: {str(e)}"}), 400
   
   # VALIDAÇÃO DAS COLUNAS DO ARQUIVO CSV
@@ -76,6 +80,7 @@ def upload_arquivo():
 
   # SALVAR OS DADOS NO POSTGRES
   try:
+    print('TESTE PINTO DURO')
     for _, row in pd_file.iterrows():
       nova_venda = Venda(
         produto=row['produto'],
